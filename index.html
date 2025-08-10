@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Music 1 Mentor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; max-width: 720px }
+      .bubble { padding: 12px 14px; border-radius: 14px; margin: 8px 0 }
+      .me { background: #e8f0fe; align-self: flex-end }
+      .bot { background: #f1f3f4 }
+      #log { display: flex; flex-direction: column }
+      #inputRow { display: flex; gap: 8px; margin-top: 12px }
+      input, button { font-size: 16px; padding: 10px 12px }
+      input { flex: 1 }
+    </style>
+  </head>
+  <body>
+    <h1>Music 1 Mentor</h1>
+    <div id="log"></div>
+    <div id="inputRow">
+      <input id="message" placeholder="Type a message" />
+      <button id="send">Send</button>
+    </div>
+    <script>
+      const log = document.getElementById("log");
+      const input = document.getElementById("message");
+      const sendBtn = document.getElementById("send");
+
+      function addBubble(text, who) {
+        const div = document.createElement("div");
+        div.className = "bubble " + who;
+        div.textContent = text;
+        log.appendChild(div);
+        div.scrollIntoView();
+      }
+
+      async function send() {
+        const text = input.value.trim();
+        if (!text) return;
+        addBubble(text, "me");
+        input.value = "";
+        addBubble("Thinking…", "bot");
+        const thinking = log.lastChild;
+
+        try {
+          const res = await fetch("http://localhost:3000/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: text })
+          });
+          const data = await res.json();
+          thinking.textContent = data.reply || "(no response)";
+        } catch (e) {
+          thinking.textContent = "Error: " + e.message;
+        }
+      }
+
+      sendBtn.onclick = send;
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter") send();
+      });
+    </script>
+  </body>
+</html>

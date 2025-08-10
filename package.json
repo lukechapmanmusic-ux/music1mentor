@@ -1,0 +1,13 @@
+{
+  "name": "music1mentor",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "openai": "^4.56.0",
+    "cors": "^2.8.5"
+  }
+}
